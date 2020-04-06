@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+
 #include "board.h"
 #include "player.h"
 
@@ -14,7 +15,8 @@ class Othello {
 public:
     Othello(int size) : board_(Board(size)), turn_(1) {}
 
-    void register_player(Player* player, int turn = -1) {
+    void register_player(Player* player) {
+        int turn = player->is_first() ? 1 : -1;
         if (turn == 1) {
             if (not player1)
                 player1.reset(player);

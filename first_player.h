@@ -3,7 +3,7 @@
 
 class FirstPlayer : public Player {
 public:
-    FirstPlayer() {}
+    FirstPlayer(bool first = true) : Player(first) {}
     std::pair<int, int> next(const Board& bd) override {
         const auto& valid = bd.get_valid_table();
         const auto& board = bd.get_board();
