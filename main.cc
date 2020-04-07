@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include "alpha_beta_player.h"
 #include "board.h"
 #include "first_player.h"
 #include "othello.h"
@@ -14,7 +15,7 @@ int main() {
     */
 
     Othello ot(sz);
-    ot.register_player(new FirstPlayer());
+    ot.register_player(new AlphaBetaPlayer());
     ot.register_player(new FirstPlayer(false));
 
     ot.run();

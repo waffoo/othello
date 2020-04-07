@@ -109,13 +109,15 @@ public:
         }
     }
 
-    void update_valid_table(int mark) {
+    bool update_valid_table(int mark) {
         pass_ = true;
         for (int i = 0; i < board_size_; i++)
             for (int j = 0; j < board_size_; j++) {
                 valid_[i][j] = calc_valid(i, j, mark);
                 if (pass_ and valid_[i][j]) pass_ = false;
             }
+
+        return pass_;
     }
 
     int size() const { return board_size_; }
@@ -175,6 +177,24 @@ public:
     }
 
     bool finished() const { return no_blank() or deadlock(); }
+
+    int winner() const {
+        int ocnt = 0;
+        int xcnt = 0;
+        for (int i = 0; i < board_size_; i++)
+            for (int j = 0; j < board_size_; j++)
+                if (board_[i][j] == 1)
+                    ocnt++;
+                else if (board_[i][j] == -1)
+                    xcnt++;
+
+        if (ocnt > xcnt)
+            return 1;
+        else if (xcnt > ocnt)
+            return -1;
+        else
+            return 0;
+    }
 
     void show_result() const {
         int ocnt = 0;
