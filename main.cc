@@ -2,8 +2,8 @@
 
 #include "alpha_beta_player.h"
 #include "board.h"
-#include "first_player.h"
 #include "othello.h"
+#include "random_player.h"
 
 int main() {
     int sz = 8;
@@ -14,9 +14,14 @@ int main() {
     } while (sz <= 0 or sz % 2 > 0);
     */
 
-    Othello ot(sz);
-    ot.register_player(new AlphaBetaPlayer());
-    ot.register_player(new FirstPlayer(false));
-
-    ot.run();
+    Othello ot(sz, false);
+    ot.register_player(new AlphaBetaPlayer(true, 4));
+    ot.register_player(new RandomPlayer(false));
+    int times = 100;
+    int win_cnt = 0;
+    for (int i = 0; i < times; i++) {
+        int res = ot.run();
+        if (res > 0) win_cnt++;
+    }
+    cout << (double)win_cnt / times << endl;
 }

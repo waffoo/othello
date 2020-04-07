@@ -8,12 +8,15 @@ using std::cin;
 
 class Othello {
     Board board_;
+    int size_;
     int turn_;
+    bool display_;
     std::unique_ptr<Player> player1;
     std::unique_ptr<Player> player2;
 
 public:
-    Othello(int size) : board_(Board(size)), turn_(1) {}
+    Othello(int size, bool display = true)
+        : board_(Board(size)), size_(size), turn_(1), display_(display) {}
 
     void register_player(Player* player) {
         int turn = player->is_first() ? 1 : -1;
@@ -32,29 +35,41 @@ public:
             std::cout << "invalid turn parameter" << std::endl;
     }
 
-    void run() {
+    int run() {
+        if (not this->display_ and (not player1 or not player2)) {
+            std::cout << "No-Display mode cannot be started. You have to "
+                         "register two players. ABORT."
+                      << std::endl;
+            exit(1);
+        }
+        this->board_ = Board(this->size_);
         int row, col;
         pair<int, int> hand;
         while (not board_.finished()) {
-            board_.display();
+            if (this->display_) board_.display();
             board_.update_valid_table(turn_);
 
-            std::cout << "\n"
-                      << (turn_ > 0 ? 'o' : 'x') << "'s turn." << std::endl;
+            if (this->display_)
+                std::cout << "\n"
+                          << (turn_ > 0 ? 'o' : 'x') << "'s turn." << std::endl;
             if (board_.pass()) {
-                std::cout << "but no valid position for "
-                          << (turn_ > 0 ? 'o' : 'x') << ". pass." << std::endl;
+                if (this->display_)
+                    std::cout << "but no valid position for "
+                              << (turn_ > 0 ? 'o' : 'x') << ". pass."
+                              << std::endl;
             } else {
                 if (turn_ == 1 and player1) {
                     auto p = player1->next(board_);
                     row = p.first, col = p.second;
-                    std::cout << "player1's hand is (" << row << ", " << col
-                              << ")" << std::endl;
+                    if (this->display_)
+                        std::cout << "player1's hand is (" << row << ", " << col
+                                  << ")" << std::endl;
                 } else if (turn_ == -1 and player2) {
                     auto p = player2->next(board_);
                     row = p.first, col = p.second;
-                    std::cout << "player2's hand is (" << row << ", " << col
-                              << ")" << std::endl;
+                    if (this->display_)
+                        std::cout << "player2's hand is (" << row << ", " << col
+                                  << ")" << std::endl;
                 } else {
                     do {
                         std::cout << "input [row] [col] > ";
@@ -75,5 +90,6 @@ public:
 
         board_.display();
         board_.show_result();
+        return board_.winner();
     }
 };

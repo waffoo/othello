@@ -184,8 +184,8 @@ public:
                     next_board.put(i, j, this->mark_);
 
                     int eval = dfs(next_board, 1, -this->mark_);
-                    std::cout << "hand " << i << " " << j << " : " << eval
-                              << endl;
+                    // std::cout << "hand " << i << " " << j << " : " << eval
+                    //          << endl;
                     if (eval > max_eval) {
                         max_eval = eval;
                         best_hand = {i, j};
