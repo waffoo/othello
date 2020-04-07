@@ -7,6 +7,85 @@
 class AlphaBetaPlayer : public Player {
     int limit;
 
+    int determined(const Board& bd) {
+        const auto& board = bd.get_board();
+        int sum = 0;
+
+        int ul = board[0][0];
+        if (abs(ul) > 0) {
+            sum += ul;
+            for (int i = 1; i < 8; i++) {
+                if (board[0][i] == ul)
+                    sum += ul;
+                else
+                    break;
+            }
+            for (int i = 1; i < 8; i++) {
+                if (board[i][0] == ul) {
+                    sum += ul;
+                    if (i == 7) sum -= ul * 7;
+                } else
+                    break;
+            }
+        }
+
+        int ur = board[0][7];
+        if (abs(ur) > 0) {
+            sum += ur;
+            for (int i = 1; i < 8; i++) {
+                if (board[i][7] == ur)
+                    sum += ur;
+                else
+                    break;
+            }
+            for (int i = 6; i >= 0; i--) {
+                if (board[0][i] == ur) {
+                    sum += ur;
+                    if (i == 0) sum -= ur * 7;
+                } else
+                    break;
+            }
+        }
+
+        int lr = board[7][7];
+        if (abs(lr) > 0) {
+            sum += lr;
+            for (int i = 6; i >= 0; i--) {
+                if (board[7][i] == lr)
+                    sum += lr;
+                else
+                    break;
+            }
+            for (int i = 6; i >= 0; i--) {
+                if (board[i][7] == lr) {
+                    sum += lr;
+                    if (i == 0) sum -= lr * 7;
+                } else
+                    break;
+            }
+        }
+
+        int ll = board[7][0];
+        if (abs(ll) > 0) {
+            sum += ll;
+            for (int i = 6; i >= 0; i--) {
+                if (board[i][0] == ll)
+                    sum += ll;
+                else
+                    break;
+            }
+            for (int i = 1; i < 8; i++) {
+                if (board[7][i] == ll) {
+                    sum += ll;
+                    if (i == 7) sum -= ll * 7;
+                } else
+                    break;
+            }
+        }
+
+        return sum;
+    }
+
     int point(int row, int col) {
         int r = std::min(row, 7 - row), c = std::min(col, 7 - col);
         if (r < c) std::swap(r, c);
@@ -34,6 +113,10 @@ class AlphaBetaPlayer : public Player {
                     sum -= point(row, col);
             }
         }
+
+        int det = this->determined(bd) * 8;
+        sum += det * this->mark_;
+
         return sum;
     }
 
