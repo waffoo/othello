@@ -11,6 +11,7 @@ class Board {
     int board_size_;
     vector<vector<int>> board_;
     vector<vector<bool>> valid_;
+    vector<pair<int, int>> candidate_;
     int blank_num_;
     int result_;
     bool pass_;
@@ -110,19 +111,21 @@ public:
     }
 
     bool update_valid_table(int mark) {
-        pass_ = true;
+        candidate_.clear();
         for (int i = 0; i < board_size_; i++)
             for (int j = 0; j < board_size_; j++) {
-                valid_[i][j] = calc_valid(i, j, mark);
-                if (pass_ and valid_[i][j]) pass_ = false;
+                if (valid_[i][j] = calc_valid(i, j, mark))
+                    candidate_.push_back({i, j});
             }
 
+        pass_ = candidate_.size() == 0;
         return pass_;
     }
 
     int size() const { return board_size_; }
     vector<vector<bool>> get_valid_table() const { return valid_; }
     vector<vector<int>> get_board() const { return board_; }
+    vector<pair<int, int>> get_candidates() { return candidate_; }
 
     bool pass() {
         if (pass_)
