@@ -14,7 +14,6 @@ class Board {
     vector<pair<int, int>> candidate_;
     int blank_num_;
     int result_;
-    bool pass_;
     int pass_cnt_;
     vector<pair<int, int>> dirs_ = {{-1, -1}, {-1, 0}, {-1, 1}, {0, -1},
                                     {0, 1},   {1, -1}, {1, 0},  {1, 1}};
@@ -77,7 +76,6 @@ public:
           valid_(vector<vector<bool>>(size, vector<bool>(size))),
           blank_num_(size * size - 4),
           result_(0),
-          pass_(false),
           pass_cnt_(0) {
         int mid = size / 2;
         board_[mid - 1][mid - 1] = 1;
@@ -110,30 +108,22 @@ public:
         }
     }
 
-    bool update_valid_table(int mark) {
+    void update_valid_table(int mark) {
         candidate_.clear();
         for (int i = 0; i < board_size_; i++)
             for (int j = 0; j < board_size_; j++) {
                 if (valid_[i][j] = calc_valid(i, j, mark))
                     candidate_.push_back({i, j});
             }
-
-        pass_ = candidate_.size() == 0;
-        return pass_;
+        if (pass()) pass_cnt_++;
     }
 
     int size() const { return board_size_; }
     vector<vector<bool>> get_valid_table() const { return valid_; }
     vector<vector<int>> get_board() const { return board_; }
-    vector<pair<int, int>> get_candidates() { return candidate_; }
+    vector<pair<int, int>> get_candidates() const { return candidate_; }
 
-    bool pass() {
-        if (pass_)
-            pass_cnt_++;
-        else
-            pass_cnt_ = 0;
-        return pass_;
-    }
+    bool pass() { return candidate_.size() == 0; }
 
     bool available(int row, int col) const {
         bool res = on_board(row, col) and valid_[row][col];

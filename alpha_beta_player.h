@@ -1,4 +1,5 @@
 #pragma once
+#include <chrono>
 #include <climits>
 #include <iostream>
 #include <vector>
@@ -7,6 +8,7 @@
 
 class AlphaBetaPlayer : public Player {
     int limit;
+    int cntcnt = 0;
 
     int determined(const Board& bd) {
         const auto& board = bd.get_board();
@@ -122,6 +124,7 @@ class AlphaBetaPlayer : public Player {
     }
 
     int dfs(Board bd, int depth, int turn, int alpha, int beta) {
+        this->cntcnt++;
         if (depth == this->limit) return this->eval_board(bd);
         if (bd.finished()) {
             constexpr int result = 10000;
@@ -132,10 +135,10 @@ class AlphaBetaPlayer : public Player {
                 return eval_board(bd) - result;
         }
 
-        bool pass = bd.update_valid_table(turn);
+        bd.update_valid_table(turn);
         const auto& valid = bd.get_valid_table();
 
-        if (pass) return dfs(bd, depth + 1, -turn, alpha, beta);
+        if (bd.pass()) return dfs(bd, depth + 1, -turn, alpha, beta);
 
         if (turn == this->mark_) {
             int max_val = -INT_MAX;
@@ -182,6 +185,9 @@ public:
         : Player(first), limit(limit) {}
 
     std::pair<int, int> next(const Board& bd) override {
+        auto st = std::chrono::system_clock::now();
+        this->cntcnt = 0;
+
         const auto& board = bd.get_board();
         const auto& valid = bd.get_valid_table();
 
@@ -205,6 +211,12 @@ public:
                 }
             }
         }
+        auto ed = std::chrono::system_clock::now();
+        double elapsed =
+            std::chrono::duration_cast<std::chrono::milliseconds>(ed - st)
+                .count();
+        std::cout << "cnt = " << this->cntcnt << " elapsed : " << elapsed
+                  << " ms" << std::endl;
 
         return best_hand;
     }
