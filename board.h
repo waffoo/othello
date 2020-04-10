@@ -115,7 +115,11 @@ public:
                 if (valid_[i][j] = calc_valid(i, j, mark))
                     candidate_.push_back({i, j});
             }
-        if (pass()) pass_cnt_++;
+
+        if (pass())
+            pass_cnt_++;
+        else
+            pass_cnt_ = 0;
     }
 
     int size() const { return board_size_; }

@@ -136,45 +136,36 @@ class AlphaBetaPlayer : public Player {
         }
 
         bd.update_valid_table(turn);
-        const auto& valid = bd.get_valid_table();
 
         if (bd.pass()) return dfs(bd, depth + 1, -turn, alpha, beta);
 
+        const auto& moves = bd.get_candidates();
+
         if (turn == this->mark_) {
             int max_val = -INT_MAX;
-            for (int i = 0; i < bd.size(); i++) {
-                for (int j = 0; j < bd.size(); j++) {
-                    if (valid[i][j]) {
-                        auto next_board = bd;
-                        next_board.put(i, j, turn);
-                        int eval =
-                            dfs(next_board, depth + 1, -turn, alpha, beta);
-                        if (eval > max_val) {
-                            max_val = eval;
-                            alpha = max_val;
-                        }
-                        if (alpha >= beta) return max_val;
-                    }
+            for (auto [i, j] : moves) {
+                auto next_board = bd;
+                next_board.put(i, j, turn);
+                int eval = dfs(next_board, depth + 1, -turn, alpha, beta);
+                if (eval > max_val) {
+                    max_val = eval;
+                    alpha = max_val;
                 }
+                if (alpha >= beta) return max_val;
             }
             return max_val;
 
         } else {
             int min_val = INT_MAX;
-            for (int i = 0; i < bd.size(); i++) {
-                for (int j = 0; j < bd.size(); j++) {
-                    if (valid[i][j]) {
-                        auto next_board = bd;
-                        next_board.put(i, j, turn);
-                        int eval =
-                            dfs(next_board, depth + 1, -turn, alpha, beta);
-                        if (eval < min_val) {
-                            min_val = eval;
-                            beta = min_val;
-                        }
-                        if (alpha >= beta) return min_val;
-                    }
+            for (auto [i, j] : moves) {
+                auto next_board = bd;
+                next_board.put(i, j, turn);
+                int eval = dfs(next_board, depth + 1, -turn, alpha, beta);
+                if (eval < min_val) {
+                    min_val = eval;
+                    beta = min_val;
                 }
+                if (alpha >= beta) return min_val;
             }
             return min_val;
         }
@@ -189,28 +180,22 @@ public:
         this->cntcnt = 0;
 
         const auto& board = bd.get_board();
-        const auto& valid = bd.get_valid_table();
+        const auto& moves = bd.get_candidates();
 
         int max_eval = -10000000;
         std::pair<int, int> best_hand = {-1, -1};
 
-        for (int i = 0; i < bd.size(); i++) {
-            for (int j = 0; j < bd.size(); j++) {
-                if (valid[i][j]) {
-                    auto next_board = bd;
-                    next_board.put(i, j, this->mark_);
+        for (auto [i, j] : moves) {
+            auto next_board = bd;
+            next_board.put(i, j, this->mark_);
 
-                    int eval =
-                        dfs(next_board, 1, -this->mark_, -INT_MAX, INT_MAX);
-                    // std::cout << "hand " << i << " " << j << " : " << eval
-                    //          << endl;
-                    if (eval > max_eval) {
-                        max_eval = eval;
-                        best_hand = {i, j};
-                    }
-                }
+            int eval = dfs(next_board, 1, -this->mark_, -INT_MAX, INT_MAX);
+            if (eval > max_eval) {
+                max_eval = eval;
+                best_hand = {i, j};
             }
         }
+
         auto ed = std::chrono::system_clock::now();
         double elapsed =
             std::chrono::duration_cast<std::chrono::milliseconds>(ed - st)
