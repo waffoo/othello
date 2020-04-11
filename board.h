@@ -15,6 +15,7 @@ class Board {
     int blank_num_;
     int result_;
     int pass_cnt_;
+    pair<int, int> prev_move_;
     vector<pair<int, int>> dirs_ = {{-1, -1}, {-1, 0}, {-1, 1}, {0, -1},
                                     {0, 1},   {1, -1}, {1, 0},  {1, 1}};
 
@@ -76,7 +77,8 @@ public:
           valid_(vector<vector<bool>>(size, vector<bool>(size))),
           blank_num_(size * size - 4),
           result_(0),
-          pass_cnt_(0) {
+          pass_cnt_(0),
+          prev_move_({-1, 0}) {
         int mid = size / 2;
         board_[mid - 1][mid - 1] = 1;
         board_[mid][mid] = 1;
@@ -126,6 +128,7 @@ public:
     vector<vector<bool>> get_valid_table() const { return valid_; }
     vector<vector<int>> get_board() const { return board_; }
     vector<pair<int, int>> get_candidates() const { return candidate_; }
+    pair<int, int> get_prev_move() const { return prev_move_; }
 
     bool pass() { return candidate_.size() == 0; }
 
@@ -143,6 +146,20 @@ public:
 
         board_[row][col] = mark;
         blank_num_--;
+
+        int move_idx = -1;
+        for (int i = 0; i < this->candidate_.size(); i++) {
+            auto [r, c] = this->candidate_[i];
+            if (row == r and col == c) {
+                move_idx = i;
+                break;
+            }
+        }
+        if (move_idx == -1) {
+            cout << "invalid prev hand. ABORT" << endl;
+            exit(1);
+        }
+        prev_move_ = {move_idx, mark};
 
         int other = -mark;
         int nowr, nowc;
