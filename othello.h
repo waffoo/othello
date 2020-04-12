@@ -48,7 +48,7 @@ public:
         int row, col;
         pair<int, int> hand;
         while (not board_.finished()) {
-            if (this->display_) board_.display();
+            // if (this->display_) board_.display();
             board_.update_valid_table(turn_);
 
             if (this->display_)

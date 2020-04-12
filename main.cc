@@ -15,8 +15,8 @@ int main() {
     */
 
     Othello ot(sz);
-    // ot.register_player(new AlphaBetaPlayer(true, 7));  // o
-    ot.register_player(new RandomPlayer(false));  // x
+    ot.register_player(new AlphaBetaPlayer(true, 7));  // o
+    ot.register_player(new RandomPlayer(false));       // x
     int times = 1;
     int win_cnt = 0;
     for (int i = 0; i < times; i++) {

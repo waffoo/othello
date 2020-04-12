@@ -9,6 +9,8 @@
 class AlphaBetaPlayer : public Player {
     int limit;
     int cntcnt = 0;
+    bool timeout = false;
+    std::chrono::system_clock::time_point start_;
 
     int determined(const Board& bd) {
         const auto& board = bd.get_board();
@@ -125,7 +127,18 @@ class AlphaBetaPlayer : public Player {
 
     int dfs(Board bd, int depth, int turn, int alpha, int beta) {
         this->cntcnt++;
-        if (depth == this->limit) return this->eval_board(bd);
+        if (this->cntcnt % 50000 == 0) {
+            auto ed = std::chrono::system_clock::now();
+            double elapsed =
+                std::chrono::duration_cast<std::chrono::milliseconds>(ed -
+                                                                      start_)
+                    .count();
+            if (elapsed > 2900) {
+                cout << "timeout!!!!!!!!!!" << endl;
+                timeout = true;
+            }
+        }
+        if (timeout or depth == this->limit) return this->eval_board(bd);
         if (bd.finished()) {
             constexpr int result = 10000;
             int win = bd.winner();
@@ -176,8 +189,9 @@ public:
         : Player(first), limit(limit) {}
 
     std::pair<int, int> next(const Board& bd) override {
-        auto st = std::chrono::system_clock::now();
+        this->start_ = std::chrono::system_clock::now();
         this->cntcnt = 0;
+        this->timeout = false;
 
         const auto& board = bd.get_board();
         const auto& moves = bd.get_candidates();
@@ -198,7 +212,7 @@ public:
 
         auto ed = std::chrono::system_clock::now();
         double elapsed =
-            std::chrono::duration_cast<std::chrono::milliseconds>(ed - st)
+            std::chrono::duration_cast<std::chrono::milliseconds>(ed - start_)
                 .count();
         std::cout << "cnt = " << this->cntcnt << " elapsed : " << elapsed
                   << " ms" << std::endl;
