@@ -15,6 +15,7 @@ class Board {
     int blank_num_;
     int result_;
     int pass_cnt_;
+    pair<int, int> prev_move_point_;
     pair<int, int> prev_move_;
     vector<pair<int, int>> dirs_ = {{-1, -1}, {-1, 0}, {-1, 1}, {0, -1},
                                     {0, 1},   {1, -1}, {1, 0},  {1, 1}};
@@ -78,6 +79,7 @@ public:
           blank_num_(size * size - 4),
           result_(0),
           pass_cnt_(0),
+          prev_move_point_({-1, -1}),
           prev_move_({-1, 0}) {
         int mid = size / 2;
         board_[mid - 1][mid - 1] = 1;
@@ -89,6 +91,7 @@ public:
     }
 
     void display() const {
+        auto [prev_row, prev_col] = prev_move_point_;
         cout << "\n    ";
         for (int i = 0; i < board_size_; i++) cout << i << "   ";
         cout << endl;
@@ -100,7 +103,12 @@ public:
         for (int i = 0; i < board_size_; i++) {
             cout << i << " | ";
             for (int j = 0; j < board_size_; j++) {
-                cout << num_to_mark(board_[i][j]) << " | ";
+                if (i == prev_row and j == prev_col) {
+                    cout << "\033[32m" << num_to_mark(board_[i][j])
+                         << "\033[m | ";
+                } else {
+                    cout << num_to_mark(board_[i][j]) << " | ";
+                }
             }
             cout << endl;
 
@@ -159,6 +167,7 @@ public:
             cout << "invalid prev hand. ABORT" << endl;
             exit(1);
         }
+        prev_move_point_ = {row, col};
         prev_move_ = {move_idx, mark};
 
         int other = -mark;
