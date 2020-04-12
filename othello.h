@@ -64,18 +64,22 @@ public:
                     auto p = player1->next(board_);
                     row = p.first, col = p.second;
                     if (this->display_)
-                        std::cout << "player1's hand is (" << row << ", " << col
-                                  << ")" << std::endl;
+                        std::cout << "player1's hand is (" << row + 1 << ", "
+                                  << char(col + 'a') << ")" << std::endl;
                 } else if (turn_ == -1 and player2) {
                     auto p = player2->next(board_);
                     row = p.first, col = p.second;
                     if (this->display_)
-                        std::cout << "player2's hand is (" << row << ", " << col
-                                  << ")" << std::endl;
+                        std::cout << "player2's hand is (" << row + 1 << ", "
+                                  << char(col + 'a') << ")" << std::endl;
                 } else {
                     do {
+                        int input_row;
+                        char input_col;
                         std::cout << "input [row] [col] > ";
-                        cin >> row >> col;
+                        cin >> input_row >> input_col;
+                        row = input_row < 0 ? input_row : input_row - 1;
+                        col = input_col - 'a';
 
                         if ((row == -1 or row == -2) and
                             history_.size() >= abs(row))

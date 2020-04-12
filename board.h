@@ -82,10 +82,10 @@ public:
           prev_move_point_({-1, -1}),
           prev_move_({-1, 0}) {
         int mid = size / 2;
-        board_[mid - 1][mid - 1] = 1;
-        board_[mid][mid] = 1;
-        board_[mid - 1][mid] = -1;
-        board_[mid][mid - 1] = -1;
+        board_[mid - 1][mid - 1] = -1;
+        board_[mid][mid] = -1;
+        board_[mid - 1][mid] = 1;
+        board_[mid][mid - 1] = 1;
 
         update_valid_table(1);
     }
@@ -93,7 +93,7 @@ public:
     void display() const {
         auto [prev_row, prev_col] = prev_move_point_;
         cout << "\n    ";
-        for (int i = 0; i < board_size_; i++) cout << i << "   ";
+        for (int i = 0; i < board_size_; i++) cout << char('a' + i) << "   ";
         cout << endl;
 
         cout << "  ";
@@ -101,7 +101,7 @@ public:
         cout << endl;
 
         for (int i = 0; i < board_size_; i++) {
-            cout << i << " | ";
+            cout << i + 1 << " | ";
             for (int j = 0; j < board_size_; j++) {
                 if (i == prev_row and j == prev_col) {
                     cout << "\033[32m" << num_to_mark(board_[i][j])
@@ -143,7 +143,8 @@ public:
     bool available(int row, int col) const {
         bool res = on_board(row, col) and valid_[row][col];
         if (not res)
-            cout << "pos (" << row << ", " << col << ") is not valid.\n"
+            cout << "pos (" << row + 1 << ", " << char('a' + col)
+                 << ") is not valid.\n"
                  << endl;
         return res;
     }
