@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <stack>
 
 #include "board.h"
 #include "player.h"
@@ -8,6 +9,7 @@ using std::cin;
 
 class Othello {
     Board board_;
+    std::stack<Board> history_;
     int size_;
     int turn_;
     bool display_;
@@ -46,7 +48,7 @@ public:
         int row, col;
         pair<int, int> hand;
         while (not board_.finished()) {
-            // if (this->display_) board_.display();
+            if (this->display_) board_.display();
             board_.update_valid_table(turn_);
 
             if (this->display_)
@@ -75,13 +77,28 @@ public:
                         std::cout << "input [row] [col] > ";
                         cin >> row >> col;
 
+                        if ((row == -1 or row == -2) and
+                            history_.size() >= abs(row))
+                            break;
+
                     } while (not board_.available(row, col));
                 }
 
-                int err = board_.put(row, col, turn_);
-                if (err < 0) {
-                    std::cout << "ABORT." << std::endl;
-                    exit(1);
+                if (row == -1) {
+                    board_ = history_.top();
+                    history_.pop();
+                } else if (row == -2) {
+                    history_.pop();
+                    board_ = history_.top();
+                    history_.pop();
+                    turn_ *= -1;
+                } else {
+                    history_.push(board_);
+                    int err = board_.put(row, col, turn_);
+                    if (err < 0) {
+                        std::cout << "ABORT." << std::endl;
+                        exit(1);
+                    }
                 }
             }
 
